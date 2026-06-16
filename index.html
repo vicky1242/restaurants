@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ember & Oak — Fine Dining Austin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#F9F5EE;
+  --dark:#16110A;
+  --gold:#B8894A;
+  --gold-lt:#D4AA72;
+  --gold-pale:#F0E4CC;
+  --muted:#7A6E5F;
+  --white:#FFFFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 64px;
+  transition:all 0.5s ease;
+}
+nav.scrolled{
+  background:rgba(249,245,238,0.96);
+  backdrop-filter:blur(16px);
+  padding:16px 64px;
+  border-bottom:1px solid rgba(184,137,74,0.15);
+}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:300;letter-spacing:0.05em;
+  color:var(--white);transition:color 0.4s;
+}
+nav.scrolled .nav-logo{color:var(--dark)}
+.nav-links{display:flex;gap:40px;list-style:none}
+.nav-links a{
+  font-size:12px;font-weight:400;letter-spacing:0.12em;
+  text-transform:uppercase;text-decoration:none;
+  color:rgba(255,255,255,0.75);transition:color 0.3s;
+}
+nav.scrolled .nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{
+  font-size:11px;font-weight:500;letter-spacing:0.12em;
+  text-transform:uppercase;text-decoration:none;
+  padding:11px 28px;
+  border:1px solid rgba(255,255,255,0.4);
+  color:var(--white);border-radius:1px;
+  transition:all 0.3s;
+}
+nav.scrolled .nav-cta{border-color:var(--gold);color:var(--gold)}
+.nav-cta:hover{background:var(--gold);color:var(--white);border-color:var(--gold)}
+
+/* ── HERO ── */
+.hero{
+  position:relative;height:100vh;min-height:700px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-img{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85');
+  background-size:cover;background-position:center;
+  transform:scale(1.08);
+  animation:heroZoom 12s ease-out forwards;
+}
+@keyframes heroZoom{to{transform:scale(1)}}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    rgba(16,10,4,0.55) 0%,
+    rgba(16,10,4,0.35) 40%,
+    rgba(16,10,4,0.7) 100%);
+}
+.hero-content{
+  position:relative;text-align:center;padding:0 24px;
+  opacity:0;transform:translateY(36px);
+  animation:fadeUp 1.2s cubic-bezier(0.22,1,0.36,1) 0.6s forwards;
+}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{
+  font-size:11px;font-weight:400;letter-spacing:0.3em;
+  text-transform:uppercase;color:var(--gold-lt);
+  margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:16px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';width:48px;height:0.5px;background:var(--gold-lt);opacity:0.7;
+}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(56px,9vw,110px);
+  font-weight:300;line-height:0.95;
+  color:var(--white);margin-bottom:8px;
+  letter-spacing:-0.01em;
+}
+.hero-title em{font-style:italic;color:var(--gold-lt)}
+.hero-sub{
+  font-size:14px;font-weight:300;letter-spacing:0.15em;
+  color:rgba(255,255,255,0.5);margin-bottom:52px;
+  text-transform:uppercase;
+}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-gold{
+  padding:16px 44px;background:var(--gold);
+  color:var(--white);font-size:12px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  text-decoration:none;border-radius:1px;border:1px solid var(--gold);
+  transition:all 0.3s;
+}
+.btn-gold:hover{background:transparent;color:var(--gold)}
+.btn-outline{
+  padding:16px 44px;background:transparent;
+  color:rgba(255,255,255,0.75);font-size:12px;font-weight:400;
+  letter-spacing:0.12em;text-transform:uppercase;
+  text-decoration:none;border-radius:1px;
+  border:1px solid rgba(255,255,255,0.3);transition:all 0.3s;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  animation:bobble 2.5s ease-in-out infinite;
+}
+.scroll-hint span{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.scroll-line{width:1px;height:56px;background:linear-gradient(to bottom,var(--gold),transparent)}
+@keyframes bobble{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-10px)}}
+
+/* ── RIBBON ── */
+.ribbon{
+  background:var(--dark);
+  padding:0 64px;
+  display:flex;align-items:stretch;
+  overflow:hidden;
+}
+.ribbon-item{
+  flex:1;padding:36px 24px;text-align:center;
+  border-right:1px solid rgba(255,255,255,0.06);
+  opacity:0;transform:translateY(16px);
+  transition:opacity 0.6s,transform 0.6s;
+}
+.ribbon-item:last-child{border-right:none}
+.ribbon-item.vis{opacity:1;transform:translateY(0)}
+.ribbon-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:40px;font-weight:300;color:var(--gold);line-height:1;
+}
+.ribbon-label{
+  font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);margin-top:6px;
+}
+
+/* ── ABOUT ── */
+.about{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:80vh;
+}
+.about-left{
+  position:relative;overflow:hidden;
+  opacity:0;transform:translateX(-30px);
+  transition:opacity 0.9s,transform 0.9s;
+}
+.about-left.vis{opacity:1;transform:translateX(0)}
+.about-left img{
+  width:100%;height:100%;object-fit:cover;
+  display:block;
+  transition:transform 0.8s ease;
+}
+.about-left:hover img{transform:scale(1.04)}
+.about-overlay-badge{
+  position:absolute;bottom:40px;right:-1px;
+  background:var(--gold);
+  padding:24px 28px;
+  text-align:center;
+}
+.about-overlay-badge .big{
+  font-family:'Cormorant Garamond',serif;
+  font-size:42px;font-weight:300;color:var(--white);line-height:1;
+}
+.about-overlay-badge .small{
+  font-size:10px;letter-spacing:0.15em;
+  text-transform:uppercase;color:rgba(255,255,255,0.8);
+  margin-top:4px;
+}
+.about-right{
+  padding:80px 72px;display:flex;flex-direction:column;justify-content:center;
+  background:var(--cream);
+  opacity:0;transform:translateX(30px);
+  transition:opacity 0.9s 0.15s,transform 0.9s 0.15s;
+}
+.about-right.vis{opacity:1;transform:translateX(0)}
+.eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:20px;display:flex;align-items:center;gap:12px;
+}
+.eyebrow::after{content:'';width:40px;height:0.5px;background:var(--gold);opacity:0.5}
+.sec-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,4vw,58px);font-weight:300;line-height:1.1;
+  color:var(--dark);margin-bottom:24px;
+}
+.sec-title em{font-style:italic;color:var(--gold)}
+.about-desc{
+  font-size:16px;line-height:1.9;color:var(--muted);
+  margin-bottom:40px;font-weight:300;
+}
+.feature-list{display:flex;flex-direction:column;gap:1px}
+.feat{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid rgba(184,137,74,0.12);
+  transition:padding-left 0.3s;
+}
+.feat:hover{padding-left:8px}
+.feat-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gold);flex-shrink:0;
+}
+.feat-text{font-size:14px;color:var(--dark);font-weight:400}
+
+/* ── MENU SECTION ── */
+.menu-section{background:var(--dark);padding:100px 64px}
+.menu-header{
+  display:flex;justify-content:space-between;
+  align-items:flex-end;margin-bottom:64px;flex-wrap:wrap;gap:24px;
+}
+.menu-header .sec-title{color:var(--white);margin-bottom:0}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.menu-card{
+  position:relative;overflow:hidden;
+  aspect-ratio:3/4;cursor:pointer;
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.7s,transform 0.7s;
+}
+.menu-card.vis{opacity:1;transform:translateY(0)}
+.menu-card img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  display:block;
+}
+.menu-card:hover img{transform:scale(1.08)}
+.menu-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(16,10,4,0.92) 0%,rgba(16,10,4,0.1) 60%,transparent 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:32px 28px;
+  transition:background 0.4s;
+}
+.menu-card:hover .menu-card-overlay{
+  background:linear-gradient(to top,rgba(16,10,4,0.96) 0%,rgba(16,10,4,0.3) 60%,transparent 100%);
+}
+.menu-tag{
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:8px;font-weight:500;
+}
+.menu-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;color:var(--white);
+  line-height:1.1;margin-bottom:8px;
+}
+.menu-desc{
+  font-size:13px;color:rgba(255,255,255,0.55);
+  line-height:1.6;
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s ease,opacity 0.4s;
+  opacity:0;
+}
+.menu-card:hover .menu-desc{max-height:80px;opacity:1}
+.menu-price{
+  font-size:14px;color:var(--gold-lt);
+  margin-top:12px;font-weight:400;
+}
+
+/* ── GALLERY ── */
+.gallery-section{padding:0}
+.gallery-top{padding:80px 64px 48px}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  grid-template-rows:320px 320px;
+  gap:3px;
+}
+.gal-item{overflow:hidden;position:relative;cursor:pointer}
+.gal-item img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.gal-item:hover img{transform:scale(1.07)}
+.gal-item:nth-child(1){grid-row:span 2}
+.gal-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px 20px 20px;
+  background:linear-gradient(to top,rgba(0,0,0,0.65),transparent);
+  color:rgba(255,255,255,0.85);font-size:13px;
+  letter-spacing:0.05em;
+  opacity:0;transition:opacity 0.3s;
+}
+.gal-item:hover .gal-label{opacity:1}
+
+/* ── TESTIMONIALS ── */
+.reviews-section{
+  background:var(--cream);
+  padding:100px 64px;
+}
+.reviews-header{text-align:center;margin-bottom:64px}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.review-card{
+  background:var(--white);
+  padding:40px 32px;
+  border:1px solid rgba(184,137,74,0.12);
+  position:relative;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.6s,transform 0.6s,box-shadow 0.3s,border-color 0.3s;
+}
+.review-card.vis{opacity:1;transform:translateY(0)}
+.review-card:hover{
+  box-shadow:0 20px 60px rgba(184,137,74,0.1);
+  border-color:rgba(184,137,74,0.3);
+}
+.review-q{
+  font-family:'Cormorant Garamond',serif;
+  font-size:64px;line-height:1;color:var(--gold);opacity:0.25;
+  margin-bottom:-10px;
+}
+.stars{color:var(--gold);font-size:13px;letter-spacing:3px;margin-bottom:16px}
+.review-text{
+  font-size:15px;line-height:1.85;color:var(--muted);
+  font-style:italic;margin-bottom:28px;font-weight:300;
+}
+.reviewer{display:flex;align-items:center;gap:14px}
+.reviewer-avatar{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--dark));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:white;font-weight:500;
+  font-family:'Inter',sans-serif;flex-shrink:0;
+}
+.reviewer-name{font-size:14px;font-weight:500;color:var(--dark)}
+.reviewer-role{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── CTA ── */
+.cta-section{
+  position:relative;overflow:hidden;
+  min-height:520px;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+}
+.cta-bg{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=85');
+  background-size:cover;background-position:center;
+}
+.cta-overlay{
+  position:absolute;inset:0;
+  background:rgba(16,10,4,0.82);
+}
+.cta-content{
+  position:relative;padding:100px 24px;
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.8s,transform 0.8s;
+}
+.cta-content.vis{opacity:1;transform:translateY(0)}
+.cta-eyebrow{
+  font-size:11px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+}
+.cta-eyebrow::before,.cta-eyebrow::after{
+  content:'';width:40px;height:0.5px;background:var(--gold);opacity:0.6;
+}
+.cta-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(40px,6vw,72px);font-weight:300;
+  color:var(--white);line-height:1.1;margin-bottom:16px;
+}
+.cta-title em{font-style:italic;color:var(--gold-lt)}
+.cta-sub{
+  font-size:15px;color:rgba(255,255,255,0.45);
+  margin-bottom:48px;font-weight:300;
+}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta-note{
+  margin-top:28px;font-size:12px;
+  color:rgba(255,255,255,0.2);letter-spacing:0.08em;
+}
+
+/* ── FOOTER ── */
+footer{background:#0D0904;padding:60px 64px 32px}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:48px;padding-bottom:48px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.footer-brand{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;color:var(--white);margin-bottom:12px;
+}
+.footer-tagline{
+  font-size:13px;color:rgba(255,255,255,0.28);
+  line-height:1.8;max-width:220px;font-weight:300;
+}
+.footer-divider{
+  width:32px;height:1px;background:var(--gold);
+  opacity:0.5;margin:20px 0;
+}
+.footer-contact a{
+  display:block;font-size:13px;color:rgba(255,255,255,0.4);
+  text-decoration:none;margin-bottom:8px;
+  transition:color 0.2s;
+}
+.footer-contact a:hover{color:var(--gold)}
+.f-col-title{
+  font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;font-weight:500;
+}
+.f-links{display:flex;flex-direction:column;gap:10px}
+.f-links a{
+  font-size:13px;color:rgba(255,255,255,0.38);
+  text-decoration:none;transition:color 0.2s;font-weight:300;
+}
+.f-links a:hover{color:var(--gold-lt)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:28px;flex-wrap:wrap;gap:12px;
+}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.18)}
+.footer-credit{font-size:12px;color:rgba(255,255,255,0.18)}
+.footer-credit span{color:var(--gold)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:18px 24px}
+  nav.scrolled{padding:14px 24px}
+  .nav-links{display:none}
+  .about{grid-template-columns:1fr}
+  .about-left{height:360px}
+  .about-right{padding:48px 24px}
+  .menu-section{padding:60px 24px}
+  .menu-grid{grid-template-columns:1fr}
+  .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .gal-item:nth-child(1){grid-row:span 1}
+  .reviews-section{padding:60px 24px}
+  .reviews-grid{grid-template-columns:1fr}
+  .ribbon{padding:0 24px;flex-wrap:wrap}
+  .ribbon-item{border-right:none;border-bottom:1px solid rgba(255,255,255,0.06)}
+  footer{padding:40px 24px 24px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .gallery-top{padding:60px 24px 36px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Ember & Oak</div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Reserve a Table</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-img"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Est. 2018 · Austin, Texas</p>
+    <h1 class="hero-title">Where Every Meal<br>Becomes a <em>Memory</em></h1>
+    <p class="hero-sub">Wood-fired cuisine · Seasonal ingredients · Unforgettable evenings</p>
+    <div class="hero-btns">
+      <a href="#cta" class="btn-gold">Reserve Your Table</a>
+      <a href="#menu" class="btn-outline">Explore Menu</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- RIBBON -->
+<div class="ribbon">
+  <div class="ribbon-item">
+    <div class="ribbon-num">12+</div>
+    <div class="ribbon-label">Years of Excellence</div>
+  </div>
+  <div class="ribbon-item">
+    <div class="ribbon-num">4.9★</div>
+    <div class="ribbon-label">Google Rating</div>
+  </div>
+  <div class="ribbon-item">
+    <div class="ribbon-num">200+</div>
+    <div class="ribbon-label">Five-Star Reviews</div>
+  </div>
+  <div class="ribbon-item">
+    <div class="ribbon-num">3</div>
+    <div class="ribbon-label">Local Awards Won</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="about" id="about">
+  <div class="about-left">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=85" alt="Beautifully plated dish at Ember and Oak" loading="lazy">
+    <div class="about-overlay-badge">
+      <div class="big">12+</div>
+      <div class="small">Years of Craft</div>
+    </div>
+  </div>
+  <div class="about-right">
+    <p class="eyebrow">Our Story</p>
+    <h2 class="sec-title">Passion Meets<br><em>Tradition</em></h2>
+    <p class="about-desc">Born from a love of wood-fire cooking and locally sourced ingredients, Ember & Oak has been Austin's best-kept secret since 2018. Every dish tells a story of the land it came from.</p>
+    <div class="feature-list">
+      <div class="feat"><div class="feat-dot"></div><div class="feat-text">Ingredients from 15 local farms within 50 miles</div></div>
+      <div class="feat"><div class="feat-dot"></div><div class="feat-text">Signature oak-fire grill — flavors you can't replicate</div></div>
+      <div class="feat"><div class="feat-dot"></div><div class="feat-text">200+ labels from boutique Texas and California wineries</div></div>
+      <div class="feat"><div class="feat-dot"></div><div class="feat-text">Open kitchen — watch your meal come to life</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="menu-header">
+    <div>
+      <p class="eyebrow" style="color:var(--gold)">What We Serve</p>
+      <h2 class="sec-title" style="color:var(--white)">Crafted with <em>Soul</em></h2>
+    </div>
+    <a href="#cta" class="btn-gold">Full Menu →</a>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=700&q=85" alt="Oak-fired steak" loading="lazy">
+      <div class="menu-card-overlay">
+        <span class="menu-tag">Signature Main</span>
+        <div class="menu-name">Ember-Fire<br>Ribeye</div>
+        <div class="menu-desc">28-day dry-aged prime cut over live oak. Served with roasted bone marrow butter and seasonal greens.</div>
+        <div class="menu-price">From $58</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=700&q=85" alt="Fresh garden salad" loading="lazy">
+      <div class="menu-card-overlay">
+        <span class="menu-tag">Garden Starter</span>
+        <div class="menu-name">Farm Fresh<br>Harvest Bowl</div>
+        <div class="menu-desc">Rotates weekly based on what's perfect from our partner farms. Always surprising, always beautiful.</div>
+        <div class="menu-price">From $18</div>
+      </div>
+    </div>
+    <div class="menu-card">
+      <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=700&q=85" alt="Artisan chocolate dessert" loading="lazy">
+      <div class="menu-card-overlay">
+        <span class="menu-tag">Artisan Dessert</span>
+        <div class="menu-name">Smoked Chocolate<br>Lava Cake</div>
+        <div class="menu-desc">On the menu since day one — by popular demand. House-made daily with Valrhona dark chocolate.</div>
+        <div class="menu-price">From $16</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<div class="gallery-section" id="gallery">
+  <div class="gallery-top">
+    <p class="eyebrow">Gallery</p>
+    <h2 class="sec-title">A Feast for<br>the <em>Eyes</em></h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=900&q=85" alt="Perfectly grilled steak" loading="lazy">
+      <div class="gal-label">Our Signature Steaks</div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=85" alt="Chef at work in kitchen" loading="lazy">
+      <div class="gal-label">Open Kitchen</div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=85" alt="Fine wine selection" loading="lazy">
+      <div class="gal-label">Wine Cellar</div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=85" alt="Fresh local ingredients" loading="lazy">
+      <div class="gal-label">Farm-Fresh Ingredients</div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85" alt="Restaurant ambiance" loading="lazy">
+      <div class="gal-label">Evening Ambiance</div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="reviews-header">
+    <p class="eyebrow" style="justify-content:center">What People Say</p>
+    <h2 class="sec-title">Loved by <em>Austin</em></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-q">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="review-text">The oak-fired ribeye was hands down the best steak I've ever had. The atmosphere, the service, the wine pairing — everything was absolutely perfect.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">JM</div>
+        <div>
+          <div class="reviewer-name">James Mitchell</div>
+          <div class="reviewer-role">Food Blogger · Austin</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-q">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="review-text">Took my wife here for our anniversary. She cried happy tears. The candlelit patio, the smoked chocolate lava cake — I owe you guys so much.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">RC</div>
+        <div>
+          <div class="reviewer-name">Robert Chen</div>
+          <div class="reviewer-role">Regular Guest · Austin</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-q">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="review-text">As a chef myself, I'm very hard to impress. Ember & Oak impressed me deeply. The sourcing, the technique, the plating — this place is the real deal.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">SL</div>
+        <div>
+          <div class="reviewer-name">Sarah Lopez</div>
+          <div class="reviewer-role">Executive Chef</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-overlay"></div>
+  <div class="cta-content">
+    <p class="cta-eyebrow">Reservations</p>
+    <h2 class="cta-title">Ready for an <em>Unforgettable</em><br>Evening?</h2>
+    <p class="cta-sub">Tables fill fast on weekends. Book yours today.</p>
+    <div class="cta-btns">
+      <a href="tel:+15125550198" class="btn-gold">📞 Call (512) 555-0198</a>
+      <a href="mailto:hello@emberoakaustin.com" class="btn-outline">Send an Email</a>
+    </div>
+    <p class="cta-note">Open Tue–Sun · 5:00 PM – 10:30 PM · 1842 South Congress Ave, Austin TX</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Ember & Oak</div>
+      <p class="footer-tagline">Wood-fire cuisine with a Texas soul. Serving Austin since 2018.</p>
+      <div class="footer-divider"></div>
+      <div class="footer-contact">
+        <a href="tel:+15125550198">(512) 555-0198</a>
+        <a href="mailto:hello@emberoakaustin.com">hello@emberoakaustin.com</a>
+        <a href="#">1842 South Congress Ave, Austin TX</a>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-title">Navigate</div>
+      <div class="f-links">
+        <a href="#about">Our Story</a>
+        <a href="#menu">Menu</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#cta">Reservations</a>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-title">Hours</div>
+      <div class="f-links">
+        <a href="#">Tue – Thu: 5pm – 10pm</a>
+        <a href="#">Fri – Sat: 5pm – 11pm</a>
+        <a href="#">Sunday: 4pm – 9pm</a>
+        <a href="#">Monday: Closed</a>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-title">Follow Us</div>
+      <div class="f-links">
+        <a href="#">Instagram</a>
+        <a href="#">Facebook</a>
+        <a href="#">Google Reviews</a>
+        <a href="#">Yelp</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Ember & Oak. All rights reserved.</span>
+    <span class="footer-credit">Website by <span>YourName.dev</span></span>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, {passive: true});
+
+// Intersection Observer
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const delay = e.target.dataset.d || 0;
+      setTimeout(() => e.target.classList.add('vis'), +delay);
+    }
+  });
+}, {threshold: 0.12});
+
+// Ribbon
+document.querySelectorAll('.ribbon-item').forEach((el, i) => {
+  el.dataset.d = i * 100;
+  io.observe(el);
+});
+
+// About
+document.querySelectorAll('.about-left, .about-right').forEach(el => io.observe(el));
+
+// Menu cards
+document.querySelectorAll('.menu-card').forEach((el, i) => {
+  el.dataset.d = i * 130;
+  io.observe(el);
+});
+
+// Review cards
+document.querySelectorAll('.review-card').forEach((el, i) => {
+  el.dataset.d = i * 110;
+  io.observe(el);
+});
+
+// CTA
+document.querySelectorAll('.cta-content').forEach(el => io.observe(el));
+
+// Counter animation
+function counter(el, to, suffix = '') {
+  let s = 0;
+  const dur = 1800;
+  const tick = ts => {
+    if (!s) s = ts;
+    const p = Math.min((ts - s) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(e * to) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+const ribbonIO = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    const nums = document.querySelectorAll('.ribbon-num');
+    counter(nums[0], 12, '+');
+    counter(nums[2], 200, '+');
+    ribbonIO.disconnect();
+  }
+}, {threshold: 0.5});
+
+const ribbon = document.querySelector('.ribbon');
+if (ribbon) ribbonIO.observe(ribbon);
+</script>
+</body>
+</html>
